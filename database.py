@@ -32,3 +32,14 @@ class Database:
             );
         """)
         self.conn.commit()
+        def save_symbol(self, ticker: str) -> int:
+    self.conn.execute(
+        "INSERT OR IGNORE INTO symbols (ticker) VALUES (?)", (ticker,))
+    self.conn.commit()
+    return self.get_symbol_id(ticker)
+
+   def get_symbol_id(self, ticker: str) -> int | None:
+       row = self.conn.execute(
+        "SELECT id FROM symbols WHERE ticker = ?", (ticker,)).fetchone()
+       return row["id"] if row else None
+        
