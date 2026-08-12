@@ -42,4 +42,11 @@ class Database:
        row = self.conn.execute(
         "SELECT id FROM symbols WHERE ticker = ?", (ticker,)).fetchone()
        return row["id"] if row else None
-        
+    def save_bars(self, symbol_id: int, bars: list[dict]) -> None:
+    self.conn.executemany("""
+        INSERT OR IGNORE INTO ohlcv_bars
+        (symbol_id, date, open, high, low, close, volume)
+        VALUES (:symbol_id, :date, :open, :high, :low, :close, :volume)
+    """, [{"symbol_id": symbol_id, **b} for b in bars])
+    self.conn.commit()
+
