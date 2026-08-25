@@ -65,3 +65,15 @@ class Database:
             FROM ohlcv_bars WHERE symbol_id = ? ORDER BY date ASC
         """, (symbol_id,)).fetchall()
         return [dict(r) for r in rows]
+
+    def list_symbols(self) -> list[dict]:
+        rows = self.conn.execute("""
+                                 SELECT s.ticker,
+                                        COUNT(b.id) as bar_count,
+                                        MIN(b.date) as from_date,
+                                        MAX(b.date) as to_date
+                                 FROM symbols s
+                                          JOIN ohlcv_bars b ON b.symbol_id = s.id
+                                 GROUP BY s.id
+                                 """).fetchall()
+        return [dict(r) for r in rows]
