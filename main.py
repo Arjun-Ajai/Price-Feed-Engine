@@ -25,3 +25,21 @@ def cmd_list(db: Database):
         cmd_list(db)
     else:
         parser.print_help()
+        
+def cmd_stream(args, db: Database):
+    from feed import Feed
+    from signals import SignalGenerator
+    from rich.console import Console
+
+    console = Console()
+    feed = Feed(db, args.ticker, speed=args.speed)
+    gen = SignalGenerator()
+
+    for bar in feed.stream():
+        sig = gen.evaluate(bar)
+        line = f"[grey]{bar['date']}[/]  C:{bar['close']:.2f}"
+        if bar['rsi_14']:
+            line += f"  SMA20:{bar['sma_20']:.2f}  RSI:{bar['rsi_14']:.1f}"
+        if sig:
+            line += f"  [bold yellow]► {sig['side']} — {sig['reason']}[/]"
+        console.print(line)
