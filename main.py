@@ -43,3 +43,35 @@ def cmd_stream(args, db: Database):
         if sig:
             line += f"  [bold yellow]► {sig['side']} — {sig['reason']}[/]"
         console.print(line)
+
+def cmd_pipe(args, db: Database):
+    from feed import Feed
+    from signals import SignalGenerator
+    from pipe import CppPipe
+
+    feed = Feed(db, args.ticker, speed=args.speed)
+    gen = SignalGenerator()
+    cpp = CppPipe(args.binary)
+
+    for bar in feed.stream():
+        sig = gen.evaluate(bar)
+        if sig:
+            fill = cpp.send_signal(args.ticker.upper(), sig["side"], 100, sig["price"])
+            print(f"→ sent {sig['side']} @ {sig['price']:.2f} | fill: {fill}")
+
+    cpp.close()def cmd_pipe(args, db: Database):
+    from feed import Feed
+    from signals import SignalGenerator
+    from pipe import CppPipe
+
+    feed = Feed(db, args.ticker, speed=args.speed)
+    gen = SignalGenerator()
+    cpp = CppPipe(args.binary)
+
+    for bar in feed.stream():
+        sig = gen.evaluate(bar)
+        if sig:
+            fill = cpp.send_signal(args.ticker.upper(), sig["side"], 100, sig["price"])
+            print(f"→ sent {sig['side']} @ {sig['price']:.2f} | fill: {fill}")
+
+    cpp.close()
