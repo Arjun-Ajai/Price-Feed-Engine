@@ -75,3 +75,12 @@ def cmd_pipe(args, db: Database):
             print(f"→ sent {sig['side']} @ {sig['price']:.2f} | fill: {fill}")
 
     cpp.close()
+def cmd_fetch(args, db: Database):
+    ticker = args.ticker.upper()
+    print(f"Fetching {ticker} for period {args.period}...")
+    try:
+        bars = Fetcher(ticker).fetch(args.period)
+    except ValueError as e:
+        print(f"Error: {e}")
+        return
+    # ...rest unchanged
