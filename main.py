@@ -1,6 +1,9 @@
 from rich.console import Console
 from rich.table import Table
 
+from fetcher import Fetcher
+
+
 def cmd_list(db: Database):
     symbols = db.list_symbols()
     if not symbols:
@@ -89,3 +92,5 @@ def cmd_stream(args, db: Database):
     for i, bar in enumerate(feed.stream()):
         if args.limit and i >= args.limit:
             break
+    p_delete = sub.add_parser("delete")
+    p_delete.add_argument("ticker")
