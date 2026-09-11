@@ -83,4 +83,9 @@ def cmd_fetch(args, db: Database):
     except ValueError as e:
         print(f"Error: {e}")
         return
-    # ...rest unchanged
+
+def cmd_stream(args, db: Database):
+    ...
+    for i, bar in enumerate(feed.stream()):
+        if args.limit and i >= args.limit:
+            break
