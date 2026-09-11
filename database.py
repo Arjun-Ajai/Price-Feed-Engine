@@ -77,3 +77,14 @@ class Database:
                                  GROUP BY s.id
                                  """).fetchall()
         return [dict(r) for r in rows]
+
+def delete_symbol(self, ticker: str) -> None:
+    symbol_id = self.get_symbol_id(ticker.upper())
+    if not symbol_id:
+        return
+    self.conn.execute("DELETE FROM signals WHERE symbol_id = ?", (symbol_id,))
+    self.conn.execute("""DELETE FROM indicators WHERE bar_id IN
+        (SELECT id FROM ohlcv_bars WHERE symbol_id = ?)""", (symbol_id,))
+    self.conn.execute("DELETE FROM ohlcv_bars WHERE symbol_id = ?", (symbol_id,))
+    self.conn.execute("DELETE FROM symbols WHERE id = ?", (symbol_id,))
+    self.conn.commit()
